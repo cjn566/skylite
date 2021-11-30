@@ -18,30 +18,16 @@ struct Rainbow : public AnimationBase{
     // state vars
     uint8_t currHue = 0;
     int currTime = 0;
-    int millisInFullCycle = 5000 * SPEED_SCALE_BASE;
 
     public:
     Rainbow(){
-        speed = -64;
-        numParams = 1;
-        params = new parameter_t[numParams];
-        params[STRETCH].max = MAX_STRETCH;
-        //params[STRETCH].ticksToAdjust = 2;
-        params[STRETCH].scaleColor = CRGB::DarkBlue;
+        
     };
 
     void initAnim(){
     }
 
-    int adjParam(uint8_t paramIdx, int change){
-        switch(paramIdx){
-            case STRETCH:
-                stretch = clamp_un0(stretch + change, MAX_STRETCH);
-                return stretch;
-                
-            default: return 0;
-        }
-    }
+    const int millisInFullCycle = 10000;
 
     void drawFrame(int16_t scaledTimeSinceLastFrame){
         currTime += scaledTimeSinceLastFrame;

@@ -72,98 +72,15 @@ struct Particles: public AnimationBase{
     
     public:
     Particles(){
-        speed = 20;
-        hueMaxTime = (MAX_HUECYCLE_MS * speed);
-        // numParams = 11;
-        numParams = 6;
-        params = new parameter_t[numParams];
-        params[MODE].max = 2;
-        params[MODE].type = CHUNKS;
-        params[MODE].ticksToAdjust = 3;
-
-        params[VELOCITY].max = 127;
-        // params[ACCELERATION].max = 127;
-        params[COLOR_CYCLE_RATE].max = 255;
-        params[RAND_START].max = 127;
     };
 
-
-    unsigned int setSpawnDelay(){
-        spawnMaxTime = (MAX_SPAWN_MS - scale_to_n( (int)spawnRate, 255, MAX_SPAWN_MS ) + MIN_SPAWN_MS) * speed;
-    };
-
-    unsigned int setHueTime(){
-        hueMaxTime = (MAX_HUECYCLE_MS - scale_to_n( (int)hueCycleRate, 255, MAX_HUECYCLE_MS ) + MIN_HUECYCLE_MS) * speed;
-    };
-
-    void speedAdjHandler () {
-        setSpawnDelay();
-        setHueTime();
-    }
 
     void initAnim(){
         random16_add_entropy(millis() & 0xffff);
-        setSpawnDelay();
-        setHueTime();
         realLifespan = lifespan << LS_LEFT_SH;
 
         for(int i =0; i<MAX_PARTICLES; i++) particle[i].birthtime = 0; // Reset Particles
         numParticles = 0;
-    }
-
-    int adjParam(uint8_t paramIdx, int change){
-        random16_add_entropy(millis() & MAKE_MASK(16));
-        switch(paramIdx){
-            case MODE:
-                mode = (Mode)clamp_un0(mode + (change > 0? 1:-1), 2);
-                return mode;
-
-            case RAND_START:
-                randstart = CLAMP_S8(randstart + change);
-                return randstart;
-                
-            case LIFESPAN:
-                lifespan = CLAMP_8(lifespan + change);
-                realLifespan = lifespan << LS_LEFT_SH;
-                return lifespan;
-                
-            case SPAWN_RATE:
-                spawnRate = CLAMP_8(spawnRate + change);
-                setSpawnDelay();
-                return spawnRate;
-
-            // case SPAWN_RATE_VAR:
-            //     spawnRateVar = CLAMP_8(spawnRateVar + change);
-            //     return spawnRateVar;
-
-            case COLOR_CYCLE_RATE:
-                hueCycleRate = clamp_un0(hueCycleRate + change, (int)params[COLOR_CYCLE_RATE].max);
-                setHueTime();
-                return hueCycleRate;
-                
-            // case COLOR_VAR:
-            //     hueVar = CLAMP_8(hueVar + change);
-            //     return hueVar;
-
-            case VELOCITY:
-                velocity = CLAMP_S8(velocity + change);
-                return velocity;
-
-            // case VELOCITY_VAR:
-            //     velocityVar = CLAMP_8(velocityVar + change);
-            //     return velocityVar;
-
-            // case ACCELERATION:
-            //     acceleration = CLAMP_S8(acceleration + change);
-            //     return acceleration;
-
-            // case ACCELERATION_VAR:
-            //     accelVar = CLAMP_8(accelVar + change);
-            //     return accelVar;
-
-            default: return 0;
-        }
-        return 0;
     }
 
     void killParticle(int i){
@@ -174,7 +91,7 @@ struct Particles: public AnimationBase{
     }
 
     int debugCounter = 0;
-    int displayCtr =  (speed * 100);
+    int displayCtr =  (80 * 100);
 
     long thisSpawnMaxTime;
 
@@ -242,7 +159,7 @@ struct Particles: public AnimationBase{
         for (int i = 0; i < MAX_PARTICLES; i++){
             if(particle[i].birthtime){
                 unsigned long age = (now - particle[i].birthtime);
-                age *= speed;
+                age *= 80;
                 if(lifespan < 255 && age > realLifespan){
                     killParticle(i);
                     continue;

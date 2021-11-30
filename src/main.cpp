@@ -1,49 +1,46 @@
-#include <Arduino.h>
-#include <OctoWS2811.h>
-#include <FastLED.h>
-
-#include "ArtMap.h"
-#include "util.h"
-#include "settings.h"
 
 
 #define USE_OCTOWS2811
 
-CRGB leds[NUM_STRIPS * SEXTANT_LED_COUNT];
+#include <Arduino.h>
+#include <OctoWS2811.h>
+#include <FastLED.h>
+
+#include "Animation.h"
+
+// CRGB leds[NUM_STRIPS * SEXTANT_LED_COUNT];
 
 void setup() {
-	FastLED.addLeds<OCTOWS2811>(leds, SEXTANT_LED_COUNT);
+	// FastLED.addLeds<OCTOWS2811>(ledData.leds, SEXTANT_LED_COUNT);
   FastLED.setMaxRefreshRate(FPS);
 	mapInit();  
 }
 
-void initAnimation(){
-  allAnims[currAnimationIdx]->initAnim();
-}
-
 
 // -------- ANIMATIONS ---------------
-#define NUM_ANIMATIONS 3
+// #define NUM_ANIMATIONS 2
 
-#include "Animations/peppermint.cpp"
-#include "Animations/rainbow.cpp"
-#include "Animations/particles.cpp"
+// #include "Animations/rainbow.cpp"
+// #include "Animations/particles.cpp"
 
-Peppermint peppermint = Peppermint();
-Rainbow rainbow = Rainbow();
-Particles particles = Particles();
+// Rainbow rainbow = Rainbow();
+// Particles particles = Particles();
 
-AnimationBase *allAnims[NUM_ANIMATIONS] = {
-    &particles,
-    &peppermint,
-    &rainbow
-    };
+// AnimationBase *allAnims[NUM_ANIMATIONS] = {
+//     &particles,
+//     &rainbow
+//     };
 
-#ifdef DEBUG
-  uint8_t currAnimationIdx = 0;
-#else
-  uint8_t currAnimationIdx = 2;
-#endif
+
+// #ifdef DEBUG
+//   uint8_t currAnimationIdx = 0;
+// #else
+//   uint8_t currAnimationIdx = 1;
+// #endif
+
+// void initAnimation(){
+//   allAnims[currAnimationIdx]->initAnim();
+// }
 
 //-------------- THE LOOP -------------------------
 
@@ -53,9 +50,12 @@ void loop() {
   long now = millis();
   long elapse = now - lastMillis;
   lastMillis = now;
+
+  // FastLED.showColor(CRGB::Blue);
+
   FastLED.show();
-  // FastLED.clear(); ?
-  allAnims[currAnimationIdx]->drawBase(elapse);
+  FastLED.clear();
+  allAnims[currAnimationIdx]->drawFrame(elapse);
 
 
   animationtTimer += elapse;
